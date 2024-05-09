@@ -114,14 +114,16 @@ namespace Wox.Plugin.Common
                         commandPattern = GetIndirectString(commandPattern);
                     }
 
-                    // HACK: for firefox installed through Microsoft store
-                    // When installed through Microsoft Firefox the commandPattern does not have
+                    // HACK: for browsers installed through Microsoft Store
+                    // When installed through Microsoft Store the commandPattern does not have
                     // quotes for the path. As the Program Files does have a space
-                    // the extracted path would be invalid, here we add the quotes to fix it
+                    // the extracted path would be invalid, here we add the quotes to fix it.
+                    const string ArcExecutableName = "arc.exe";
                     const string FirefoxExecutableName = "firefox.exe";
-                    if (commandPattern.Contains(FirefoxExecutableName) && commandPattern.Contains(@"\WindowsApps\") && (!commandPattern.StartsWith('\"')))
+                    string executableName = commandPattern.Contains(ArcExecutableName) ? ArcExecutableName : commandPattern.Contains(FirefoxExecutableName) ? FirefoxExecutableName : '';
+                    if (!string.IsNullOrEmpty(executableName) && commandPattern.Contains(@"\WindowsApps\") && (!commandPattern.StartsWith('\"')))
                     {
-                        var pathEndIndex = commandPattern.IndexOf(FirefoxExecutableName, StringComparison.Ordinal) + FirefoxExecutableName.Length;
+                        var pathEndIndex = commandPattern.IndexOf(executableName, StringComparison.Ordinal) + executableName.Length;
                         commandPattern = commandPattern.Insert(pathEndIndex, "\"");
                         commandPattern = commandPattern.Insert(0, "\"");
                     }
